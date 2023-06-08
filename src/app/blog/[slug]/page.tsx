@@ -1,6 +1,4 @@
-// incremental static regeneration allows page to be rebuilt on demand if data does change
-// data stays fresh for excellent performance and not wasting compute resources
-export const revalidate = 420;
+export const revalidate = 1200; // not necessary, just for ISR demonstration
 
 interface Post {
   title: string;
@@ -8,11 +6,7 @@ interface Post {
   slug: string;
 }
 
-interface Props {
-  params: { slug: string };
-}
-
-export async function getStaticParams() {
+export async function generateStaticParams() {
   const posts: Post[] = await fetch("http://localhost:3000/api/content").then(
     (res) => res.json()
   );
@@ -22,12 +16,15 @@ export async function getStaticParams() {
   }));
 }
 
+interface Props {
+  params: { slug: string };
+}
+
 export default async function BlogPostPage({ params }: Props) {
   // deduped
   const posts: Post[] = await fetch("http://localhost:3000/api/content").then(
     (res) => res.json()
   );
-
   const post = posts.find((post) => post.slug === params.slug)!;
 
   return (
